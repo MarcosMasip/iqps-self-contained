@@ -10,7 +10,7 @@ Quick Start (offline, recommended)
 
 Prerequisites:
 - Docker Desktop (or Docker Engine) running
-- Optional on Apple Silicon: export DOCKER_DEFAULT_PLATFORM=linux/amd64
+- Apple Silicon is supported; the compose pins linux/amd64 to avoid wheel issues.
 
 Steps (copy/paste):
 
