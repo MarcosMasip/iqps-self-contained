@@ -9,3 +9,4 @@ fuzzywuzzy==0.18.0
 requests==2.23.0
 sqlparse==0.4.4
 pytz==2019.3
+legacy-cgi>=2.6
