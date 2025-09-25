@@ -24,7 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+# Default to a dev-only key so the app can run in fully offline mode without extra setup.
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-insecure-secret-key-do-not-use-in-prod')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get("MODE", "dev") == "dev" else False
@@ -91,15 +92,25 @@ WSGI_APPLICATION = 'iqps.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'iqps',
-        'HOST': os.environ['DB_HOSTNAME'],
-        'USER': os.environ['DB_USERNAME'],
-        'PASSWORD': os.environ['DB_PASSWORD']
+if os.environ.get('DB_HOSTNAME'):
+    # Use MySQL/MariaDB when database environment variables are present (advanced/full-stack profile)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'iqps',
+            'HOST': os.environ['DB_HOSTNAME'],
+            'USER': os.environ['DB_USERNAME'],
+            'PASSWORD': os.environ['DB_PASSWORD']
+        }
     }
-}
+else:
+    # Default to SQLite for fully self-contained offline mode
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -145,6 +156,10 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.environ.get("STATIC_ROOT", "/var/static/")
+
+# Media (user-uploaded files) for offline/local storage
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 GDRIVE_DIRNAME = os.environ.get("GDRIVE_DIRNAME", "mfqp_static")
 

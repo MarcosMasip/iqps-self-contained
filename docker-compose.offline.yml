@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    environment:
+      MODE: 'dev'
+      STORAGE_BACKEND: 'local'
+      LOGIN_REQUIRED: 'True'
+    command: bash -lc "python manage.py migrate --skip-checks && python manage.py runserver 0.0.0.0:8000"
+    working_dir: /iqps/iqps
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/iqps
+    restart: unless-stopped

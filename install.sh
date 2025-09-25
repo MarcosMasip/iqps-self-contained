@@ -11,35 +11,40 @@ fi
 
 
 
-#Checkpoint 1
-#Check if credentials and token are present or not
-CRED_FILE="iqps/conf/credentials.json"  #Downloaded credentials file (Google Drive API)
-TOKEN_FILE="iqps/conf/token.pickle"
+STORAGE_BACKEND=${STORAGE_BACKEND:-local}
+if [ "$STORAGE_BACKEND" = "gdrive" ]; then
+    #Checkpoint 1 (legacy path)
+    #Check if credentials and token are present or not
+    CRED_FILE="iqps/conf/credentials.json"  #Downloaded credentials file (Google Drive API)
+    TOKEN_FILE="iqps/conf/token.pickle"
 
-if test -f "$CRED_FILE"; then
-    echo "Credentials Found"
+    if test -f "$CRED_FILE"; then
+        echo "Credentials Found"
+    else
+        echo "Get the credentials file from https://developers.google.com/drive/api/v3/quickstart/python. Set desktop application as credentials type and move the file to iqps/conf/"
+        exit
+    fi
+
+    if test -f "$TOKEN_FILE"; then
+        echo "Token File found"
+    else
+        echo "Generating token file......"
+        echo "  Creating Python environment"
+        python3 -m pip install virtualenv
+        python3 -m virtualenv mini_venv
+        echo "  Installing dependencies"
+        mini_venv/bin/pip3 install -r mini_requirements.txt
+        echo "  Authorizing application."
+        mini_venv/bin/python3 -c "import os; os.chdir('iqps'); from upload.google_connect import connect; connect()"
+        echo "  Cleaning up"
+        rm -rf mini_venv
+
+        echo "You might want to run this script again to complete the installation once you have moved the files to the app server."
+        echo "Just re-run here if you want to setup a localhost"
+        exit
+    fi
 else
-    echo "Get the credentials file from https://developers.google.com/drive/api/v3/quickstart/python. Set desktop application as credentials type and move the file to iqps/conf/"
-    exit
-fi
-
-if test -f "$TOKEN_FILE"; then
-    echo "Token File found"
-else
-    echo "Generating token file......"
-    echo "  Creating Python environment"
-    python3 -m pip install virtualenv
-    python3 -m virtualenv mini_venv
-    echo "  Installing dependencies"
-    mini_venv/bin/pip3 install -r mini_requirements.txt
-    echo "  Authorizing application."
-    mini_venv/bin/python3 -c "import os; os.chdir('iqps'); from upload.google_connect import connect; connect()"
-    echo "  Cleaning up"
-    rm -rf mini_venv
-
-    echo "You might want to run this script again to complete the installation once you have moved the files to the app server."
-    echo "Just re-run here if you want to setup a localhost"
-    exit
+    echo "Offline mode detected (STORAGE_BACKEND=$STORAGE_BACKEND). Skipping Google Drive auth."
 fi
 
 echo "Building mariadb-udf image"

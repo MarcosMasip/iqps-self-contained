@@ -1,0 +1,9 @@
+[
+  {
+    "model": "data.department",
+    "pk": 1,
+    "fields": {
+      "code": "CS"
+    }
+  }
+]

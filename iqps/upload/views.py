@@ -10,7 +10,7 @@ from data.models import Paper, Department
 from request.models import PaperRequest
 from iqps.settings import STATICFILES_DIRS, GDRIVE_DIRNAME
 from .forms import BulkUploadForm, UploadForm
-from .google_connect import upload_file, get_or_create_folder
+from .storage import get_storage
 
 GDRIVE_DIR_ID = None
 LOG = logging.getLogger(__name__)
@@ -35,12 +35,13 @@ def index(request):
                 with open(path, 'wb+') as dest:
                     for chunk in file.chunks():
                         dest.write(chunk)
+                storage = get_storage()
                 if not GDRIVE_DIR_ID:
-                    GDRIVE_DIR_ID = get_or_create_folder(GDRIVE_DIRNAME,
-                                                         public=True)
+                    GDRIVE_DIR_ID = storage.get_or_create_folder(GDRIVE_DIRNAME,
+                                                                 public=True)
                 paper = upl.save(commit=False)
-                paper.link = upload_file(path, "{}.pdf".format(uid),
-                                         folderId=GDRIVE_DIR_ID)
+                paper.link = storage.upload_file(path, "{}.pdf".format(uid),
+                                                 folderId=GDRIVE_DIR_ID)
                 keys_tmp = upl.cleaned_data.get("keywords")
                 if upl.cleaned_data.get('custom_subject', '') != '':
                     paper.subject = upl.cleaned_data.get('custom_subject')
@@ -61,7 +62,9 @@ def index(request):
                 except Exception as e:
                     LOG.warning(e)
 
-                os.remove(path)
+                # file already moved by storage.upload_file when using LocalStorage
+                if os.path.exists(path):
+                    os.remove(path)
 
         except AssertionError:
             if request.user.is_staff:
@@ -100,8 +103,8 @@ def index(request):
                                      {} entries saved"
                                      .format(saved))
 
-    return render(request, "upload.html", {
-                                            "bulk_form": bulk,
-                                            "crowd_form": upl,
-                                            "login_req": os.environ['LOGIN_REQUIRED']
-                                          })
+        return render(request, "upload.html", {
+                                                                                        "bulk_form": bulk,
+                                                                                        "crowd_form": upl,
+                                                                                        "login_req": os.environ.get('LOGIN_REQUIRED', 'True')
+                                                                                    })
