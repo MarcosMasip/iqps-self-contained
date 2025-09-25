@@ -163,6 +163,23 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 GDRIVE_DIRNAME = os.environ.get("GDRIVE_DIRNAME", "mfqp_static")
 
+# --- Logging configuration helpers (robust defaults for offline/local) ---
+# Resolve LOG_PATH: if env points to a directory, write iqps.log inside it.
+# If unset, default to BASE_DIR/logs/iqps.log and ensure the directory exists.
+_log_path_env = os.environ.get("LOG_PATH")
+if _log_path_env:
+    if os.path.isdir(_log_path_env):
+        _log_dir = _log_path_env
+        _log_file = os.path.join(_log_dir, 'iqps.log')
+    else:
+        _log_dir = os.path.dirname(_log_path_env) or os.path.join(BASE_DIR, 'logs')
+        _log_file = _log_path_env
+else:
+    _log_dir = os.path.join(BASE_DIR, 'logs')
+    _log_file = os.path.join(_log_dir, 'iqps.log')
+
+os.makedirs(_log_dir, exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -170,7 +187,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.environ.get("LOG_PATH", "/var/logs"),
+            'filename': _log_file,
             'formatter': 'verbose'
         },
     },
