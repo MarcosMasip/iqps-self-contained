@@ -83,7 +83,36 @@ Advanced (full stack, offline as well)
 --------------------------------------
 The legacy full-stack (nginx + gunicorn + MariaDB) flow is still available via docker-compose.yml, but no external APIs are required by default. For local development, the offline compose above is simpler and recommended.
 
-Screenshots
------------
-![Search Interface](docs/source/_static/search.png?)
+Stop and cleanup
+----------------
+
+- Docker (macOS/Windows/Linux):
+	- Stop the app (keeps image):
+		```zsh
+		docker compose -f docker-compose.offline.yml down
+		```
+	- Full cleanup (stop and remove container, image, and any named volumes):
+		```zsh
+		docker compose -f docker-compose.offline.yml down --rmi local --volumes
+		```
+
+- Local (no Docker; macOS/Linux):
+	- Stop the dev server: press Ctrl+C in the terminal running `scripts/dev_local.sh`.
+	- Optional cleanup (remove venv, local DB, logs, and uploaded media):
+		```zsh
+		rm -rf .venv
+		rm -f iqps/db.sqlite3
+		rm -rf iqps/logs
+		rm -rf iqps/media
+		```
+
+- Local (no Docker; Windows PowerShell):
+	- Stop the dev server: press Ctrl+C in the terminal running `scripts\dev_local.ps1`.
+	- Optional cleanup (remove venv, local DB, logs, and uploaded media):
+		```powershell
+		Remove-Item -Recurse -Force .venv
+		Remove-Item -Force iqps\db.sqlite3 -ErrorAction SilentlyContinue
+		Remove-Item -Recurse -Force iqps\logs -ErrorAction SilentlyContinue
+		Remove-Item -Recurse -Force iqps\media -ErrorAction SilentlyContinue
+		```
 
