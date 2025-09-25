@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN mkdir -p /iqps
 RUN mkdir -p /var/www/static
 RUN mkdir -p /var/log/iqps
-ADD requirements.txt /iqps/
-RUN pip install --upgrade pip && pip install -r /iqps/requirements.txt
+ADD requirements.runtime.txt /iqps/
+RUN pip install --upgrade pip && pip install -r /iqps/requirements.runtime.txt
 ADD . /iqps/
 
 WORKDIR /iqps/iqps/

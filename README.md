@@ -37,6 +37,26 @@ Visit http://localhost:8000
 
 Expected outcome: The homepage loads. Uploads are stored locally in the container (MEDIA_ROOT) and served in DEBUG mode.
 
+No Docker? Local fallback (Python venv)
+--------------------------------------
+If Docker isn’t available or fails, you can run locally using a virtual environment and SQLite.
+
+Prerequisites: Python 3.8+ installed on your machine.
+
+1) Create venv and install minimal deps
+```zsh
+bash scripts/dev_local.sh
+```
+Expected outcome: A .venv is created, minimal dependencies installed, migrations run, and the dev server starts on http://127.0.0.1:8000.
+
+2) (Optional) Create a superuser in another terminal
+```zsh
+source .venv/bin/activate
+cd iqps
+python manage.py createsuperuser
+```
+Expected outcome: Credentials are created; you can log in at /admin.
+
 Common operations
 -----------------
 - See logs:
