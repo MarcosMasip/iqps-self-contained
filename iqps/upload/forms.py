@@ -39,7 +39,8 @@ def subject_choices():
 def validate_custom_subject(value):
     try:
         subject_code = value.split("-")[0].rstrip()
-        pattern = "[A-Z][A-Z]\d{5}"
+        # Two uppercase letters followed by five digits (e.g., CS12345)
+        pattern = r"[A-Z]{2}\d{5}"
         result = re.match(pattern, subject_code)
         if result:
             return value
