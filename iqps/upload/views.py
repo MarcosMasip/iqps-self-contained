@@ -102,9 +102,9 @@ def index(request):
                                      "Bulk upload successful:\
                                      {} entries saved"
                                      .format(saved))
-
-        return render(request, "upload.html", {
-                                                                                        "bulk_form": bulk,
-                                                                                        "crowd_form": upl,
-                                                                                        "login_req": os.environ.get('LOGIN_REQUIRED', 'True')
-                                                                                    })
+    # Always render the page (for both GET and after POST processing)
+    return render(request, "upload.html", {
+        "bulk_form": bulk,
+        "crowd_form": upl,
+        "login_req": os.environ.get('LOGIN_REQUIRED', 'True')
+    })
