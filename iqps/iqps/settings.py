@@ -58,8 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# Silence primary key warnings by setting a global default auto field
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Silence primary key warnings by setting a global default auto field.
+# Use AutoField to avoid generating new migrations for legacy apps.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
