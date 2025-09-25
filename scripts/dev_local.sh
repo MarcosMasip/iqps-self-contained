@@ -19,6 +19,9 @@ export LOGIN_REQUIRED=True
 ${PY} manage.py migrate --skip-checks
 ${PY} manage.py migrate --skip-checks  # Ensure migrations are retried automatically
 
+# Seed initial data for convenience (idempotent)
+${PY} manage.py loaddata ../fixtures/sample.json || true
+
 echo "[local] Create a superuser (optional). To do so now, press Ctrl+C after and run:"
 echo "       source ${VENV}/bin/activate && cd iqps && python manage.py createsuperuser"
 

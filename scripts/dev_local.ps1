@@ -20,5 +20,8 @@ $env:LOGIN_REQUIRED = "True"
 
 python manage.py migrate --skip-checks
 
+# Seed initial data for convenience (idempotent)
+python manage.py loaddata ../fixtures/sample.json
+
 Write-Host "[local] Starting Django dev server at http://127.0.0.1:8000"
 python manage.py runserver 127.0.0.1:8000

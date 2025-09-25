@@ -36,6 +36,18 @@ One-command start (choose either Docker or Local):
 	```
 	Expected outcome: A .venv is created, minimal deps are installed, migrations run, and the server starts at http://127.0.0.1:8000.
 
+Initial data and departments
+----------------------------
+- Departments are auto-seeded on first run (post-migrate signal) with common codes like CS, EE, ME, … and "Other". If the table is empty, they will be created automatically.
+- The local scripts also load a tiny sample fixture (`iqps/fixtures/sample.json`) to ensure at least one department exists.
+- To add more departments manually:
+	```zsh
+	# via admin (easiest)
+	open http://127.0.0.1:8000/admin  # or http://localhost:8000/admin in Docker
+	# or via shell
+	source .venv/bin/activate && cd iqps && python manage.py shell -c "from data.models import Department as D; [D.objects.get_or_create(code=c) for c in ['CSE','BIO','AERO']]"
+	```
+
 No Docker? Local fallback (Python venv)
 --------------------------------------
 If Docker isn’t available or fails, you can run locally using a virtual environment and SQLite.
