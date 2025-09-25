@@ -18,6 +18,10 @@ LOG = logging.getLogger(__name__)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILE_PATH = os.path.join(BASE_DIR, "static/files/code_subjects.json")
 LOCK_PATH = os.path.join(BASE_DIR, "static/files/code_subjects.json.lock")
+os.makedirs(os.path.dirname(FILE_PATH), exist_ok=True)
+if not os.path.exists(FILE_PATH):
+    with open(FILE_PATH, "w") as f:
+        json.dump({"code_subject": []}, f)
 lock = FileLock(LOCK_PATH, timeout=3)
 
 
@@ -137,7 +141,7 @@ class UploadForm(forms.ModelForm):
             assert f is not None
             assert "pdf" in f.content_type
             # writting to file if a new subject
-            if self.cleaned_data['custom_subject'] is not "":
+            if self.cleaned_data.get('custom_subject') not in (None, ""):
                 try:
                     with lock:
                         with open(FILE_PATH, "r") as f:
@@ -149,7 +153,10 @@ class UploadForm(forms.ModelForm):
                             json.dump(data, f)
                         LOG.info("New subject added {}".format(self.cleaned_data['custom_subject']))
                 except Exception as e:
-                    lock.release()
+                    try:
+                        lock.release()
+                    except Exception:
+                        pass
                     LOG.error("Error while adding a new subject {}".format(e))
         except Exception:
             raise forms.ValidationError("Invalid File")
