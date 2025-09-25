@@ -8,8 +8,8 @@ echo "[local] Setting up virtual environment in ${VENV}"
 ${PY} -m venv ${VENV}
 source ${VENV}/bin/activate
 
-pip install --upgrade pip
-pip install -r requirements.runtime.txt
+python -m pip install --upgrade pip wheel
+python -m pip install -r requirements.runtime.txt
 
 echo "[local] Applying migrations (SQLite)"
 cd iqps

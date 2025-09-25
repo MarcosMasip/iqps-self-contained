@@ -14,28 +14,27 @@ Prerequisites:
 
 Steps (copy/paste):
 
-1) Build and start in offline mode
-```zsh
-docker compose -f docker-compose.offline.yml up --build -d
-```
-Expected outcome: Docker builds the web image and starts a container mapping http://localhost:8000.
+One-command start (choose either Docker or Local):
 
-2) Run database migrations
-```zsh
-docker compose -f docker-compose.offline.yml run --rm web python manage.py migrate --skip-checks
-```
-Expected outcome: Django applies migrations and prints "OK"/"Applying ..." output.
+- Docker (macOS/Windows/Linux):
+	```zsh
+	docker compose -f docker-compose.offline.yml up --build -d && \
+	docker compose -f docker-compose.offline.yml run --rm web python manage.py migrate --skip-checks && \
+	echo "Open http://localhost:8000"
+	```
+	Expected outcome: Image builds, container starts, migrations apply, and the app is reachable at http://localhost:8000.
 
-3) (Optional) Create a superuser to access /admin
-```zsh
-docker compose -f docker-compose.offline.yml run --rm web python manage.py createsuperuser
-```
-Expected outcome: You are prompted for username/email/password, then "Superuser created successfully".
+- Local (no Docker; macOS/Linux):
+	```zsh
+	bash scripts/dev_local.sh
+	```
+	Expected outcome: A .venv is created, minimal deps are installed, migrations run, and the server starts at http://127.0.0.1:8000.
 
-4) Open the app
-Visit http://localhost:8000
-
-Expected outcome: The homepage loads. Uploads are stored locally in the container (MEDIA_ROOT) and served in DEBUG mode.
+- Local (no Docker; Windows PowerShell):
+	```powershell
+	.\scripts\dev_local.ps1
+	```
+	Expected outcome: A .venv is created, minimal deps are installed, migrations run, and the server starts at http://127.0.0.1:8000.
 
 No Docker? Local fallback (Python venv)
 --------------------------------------
